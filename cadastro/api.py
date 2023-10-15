@@ -52,12 +52,18 @@ def listar_por_nome(request, nome: str):
 
 #editar dados 
 @api.put('cliente/editar/{id}')
-def editar_dados(request, id: int, cliente : str, telefone):
+def editar_dados(request, cliente : str, telefone, cpf: str, email: str, senha:str):
     dado = Cliente.objects.get(id=id)
-    if cliente:
-        dado.nome = cliente
-    if cliente:
-        dado.telefone = cliente
+    if 'nome ' in cliente:
+        dado.nome = cliente['nome']
+    if 'telefone' in cliente:
+        dado.telefone = cliente['telefone']
+    if 'cpf' in cliente:
+        dado.cpf = cliente['cpf']
+    if 'email' in cliente:
+        dado.email = cliente['email']
+    if 'senha' in cliente:
+        dado.senha = cliente['senha']
     dado.save()
     return {'mensagem':'seus dados foram modificados'}
 

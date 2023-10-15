@@ -65,18 +65,52 @@ def editar_dados(request, id:int, nome : str, telefone: str, cpf: str, email: st
     if dado:
         dado.senha = senha
     dado.save()
-    return {'mensagem':'seus dados foram modificados!'}
+    return {'mensagem':'seu dados foram modificados!'}
 
 #atualizar nome
-@api.patch('cliente/atualizar/{id}')
-def atualizar_nome(request, id:int):
-    cliente = get_object_or_404(Cliente, id=id)
-    novoNome = request.data.get('nome',None)
-    cliente.nome = novoNome
-    cliente.save()
-    return {'seu nome foi atualizado com sucesso'}
+@api.patch('cliente/atualizar/nome/{id}')
+def editar_nome(request, id:int, nome :  str):
+    dado = get_object_or_404(Cliente, id=id)
+    if dado:
+        dado.nome = nome
+    dado.save()
+    return {'mensagem':'seu nome foi modificado!'}
 
+#atualizar telefone
+@api.patch('cliente/atualizar/tel/{id}')
+def editar_telefone(request, id:int, telefone :  str):
+    dado = get_object_or_404(Cliente, id=id)
+    if dado:
+        dado.telefone = telefone
+    dado.save()
+    return {'mensagem':'seu telefone foi modificado!'}
 
+#atualizar cpf
+@api.patch('cliente/atualizar/cpf/{id}')
+def editar_cpf(request, id:int, cpf :  str):
+    dado = get_object_or_404(Cliente, id=id)
+    if dado:
+        dado.cpf = cpf
+    dado.save()
+    return {'mensagem':'seu cpf foi modificado!'}
+
+#atualizar email
+@api.patch('cliente/atualizar/e-mail/{id}')
+def editar_email(request, id:int, email :  str):
+    dado = get_object_or_404(Cliente, id=id)
+    if dado:
+        dado.email = email
+    dado.save()
+    return {'mensagem':'seu email foi modificado!'}
+
+#atualizar telefone
+@api.patch('cliente/atualizar/senha/{id}')
+def editar_senha(request, id:int, senha :  str):
+    dado = get_object_or_404(Cliente, id=id)
+    if dado:
+        dado.senha = senha
+    dado.save()
+    return {'mensagem':'sua senha foi modificada!'}
 
 #deletar
 @api.delete('cliente/deletar/{id}')

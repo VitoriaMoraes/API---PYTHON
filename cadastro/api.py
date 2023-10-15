@@ -67,7 +67,7 @@ def editar_dados(request, cliente : str, telefone, cpf: str, email: str, senha:s
     dado.save()
     return {'mensagem':'seus dados foram modificados!'}
 
-@api.path()
+@api.patch()
 #deletar
 @api.delete('cliente/deletar/{id}')
 def deletar(request, id:int):

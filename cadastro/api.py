@@ -50,7 +50,7 @@ def listar_por_nome(request, nome: str):
     clienteNome = Cliente.objects.get(nome=nome)
     return {'mensagem':'usuario encontrado '}
 
-#editar dados 
+#editar todos os dados 
 @api.put('cliente/editar/{id}')
 def editar_dados(request, cliente : str, telefone, cpf: str, email: str, senha:str):
     dado = Cliente.objects.get(id=id)
@@ -65,8 +65,10 @@ def editar_dados(request, cliente : str, telefone, cpf: str, email: str, senha:s
     if 'senha' in cliente:
         dado.senha = cliente['senha']
     dado.save()
-    return {'mensagem':'seus dados foram modificados'}
+    return {'mensagem':'seus dados foram modificados!'}
 
+@api.path()
+#deletar
 @api.delete('cliente/deletar/{id}')
 def deletar(request, id:int):
     cliente = Cliente.objects.get(id=id)

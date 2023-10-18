@@ -9,7 +9,7 @@ class Cliente(models.Model):
     cpf = models.CharField(max_length=14, unique=True)
     email = models.EmailField(max_length=100)
     senha = models.CharField(max_length=128)
-    foto = models.ImageField(upload_to='cliente_fotos/', null=True)
+    foto = models.ImageField(upload_to= 'imagem/')
 
     def __str__(self):
         return self.nome

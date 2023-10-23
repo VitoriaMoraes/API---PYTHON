@@ -201,3 +201,66 @@ def editar_dados(request,id:int, nome:str, telefone:str, email: str, senha: str,
     return {"mensagem":"seus dados foram atualizados"}
 
 #editar nome
+@api.patch('profissional/atualizar/nome/{id}')
+def atualizar_nome(request, id: int, nome: str):
+    novoProf = get_object_or_404(Profissional, id=id)
+    if novoProf:
+       novoProf.nome = nome
+    novoProf.save()
+    return{"mensagem":"seu nome foi atualizado"}
+
+@api.patch('profissional/atualizar/telefone/{id}')
+def atualizar_telefone(request, id: int, telefone: str):
+    novoProf = get_object_or_404(Profissional, id=id)
+    if novoProf:
+        novoProf.telefone = telefone
+    novoProf.save()
+    return{"mensagem":"seu telefone foi atualizado"}
+
+@api.patch('profissional/atualizar/email/{id}')
+def atualizar_email(request, id: int, email: str):
+    novoProf = get_object_or_404(Profissional, id=id)
+    if novoProf:
+        novoProf.email = email
+    novoProf.save()
+    return {"mensagem":"seu email foi atualizado"}
+
+@api.patch('profissional/atualizar/senha/{id}')
+def atualizar_senha(request, id: int, senha: str):
+    novoProf = get_object_or_404(Profissional, id=id)
+    if novoProf:
+        novoProf.senha = senha
+    novoProf.save()
+    return {"mensagem":"sua senha foi atualizada"}
+
+@api.post('profissional/atualizar/foto/{id}')
+def atualizar_foto(request, id: int, foto: UploadedFile = File(...)):
+    foto_data = foto.read()
+    novoProf = get_object_or_404(Profissional, id=id)
+    if novoProf:
+        novoProf.foto = ContentFile(foto_data, name = foto.name)
+    novoProf.save()
+    return {"mensagem":"sua foto foi atualizada"}
+
+@api.post('profissional/atualizar/banner/{id}')
+def atualizar_banner(request, id: int, banner: UploadedFile = File(...)):
+    banner_data = banner.read()
+    novoProf = get_object_or_404(Profissional, id=id)
+    if novoProf:
+        novoProf.banner = ContentFile(banner_data, name= banner.name)
+    novoProf.save()
+    return {"mensagem":"seu banner foi atualizado"}
+
+@api.patch('profissional/atualizar/endereco/{id}')
+def atualizar_endereco(request, id: int, endereco: str):
+    novoProf = get_object_or_404(Profissional, id=id)
+    if novoProf:
+        novoProf.endereco = endereco
+    novoProf.save()
+    return {"mensagem":"seu endereco foi atualizado"}
+
+@api.delete('profissional/deletar/{id}')
+def deletar_profissional(request, id:int):
+    novoProf = get_object_or_404(Profissional, id=id)
+    novoProf.delete()
+    return {"mensagem":"o profissional foi deletado"}

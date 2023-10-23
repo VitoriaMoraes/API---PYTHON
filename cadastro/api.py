@@ -1,39 +1,31 @@
 from django.http import HttpRequest, JsonResponse
 from ninja import ModelSchema, NinjaAPI, Schema, UploadedFile, File
-from .models import Cliente
+from .models import Cliente, Profissional
 from django.shortcuts import get_object_or_404
 from django.forms.models import model_to_dict
 from django.core.files.base import ContentFile
 from typing import List
-import orjson
 from PIL import Image
+from django.core.exceptions import MultipleObjectsReturned
 from ninja.parser import Parser
 from django.http import HttpRequest
-
-'''class ORJSONParser(Parser):
-    def parse_body(self, request: HttpRequest):
-        return orjson.loads(request.body)'''
+#import Schema 
 
 api = NinjaAPI()
 
 
-#Schema para ciração de usuário
-class ClienteSchema(ModelSchema):
-    class Config:
-        model = Cliente
+#Schema para criação do Cliente
+class ClienteSchema(ModelSchema): #ClienteSchema será usado para definir como um objeto da classe Cliente deve ser serializado/desserializado usando o ModelSchema.
+    class Config: #configura o Schema especificando quais campos devem ser incluídos no processo. 
+        model = Cliente 
         model_fields = ['nome','telefone','cpf','email','senha', 'foto']
 
-class ClienteIn(Schema):
-    nome = str
-    telefone = int
-    senha = str
+#Schema para criação do Profissional
+class ProfissionalSchema(ModelSchema): #ProfissionalSchema será usado para definir como um objeto da classe Profissional deve ser serializado/desserializado usando o ModelSchema.
+    class Config: #configura o Schema especificando quais campos devem ser incluídos no processo. 
+        model = Profissional #modelo do tipo Profissional criado no banco de dados
+        model_fields = ['nome','telefone','email','senha', 'cpf','foto','banner','endereco']
 
-class ClientOut(Schema):
-    nome = str
-    telefone = str
-    cpf = str
-    email = str
-    senha = str
 
 #criar usuário 
 @api.post('cliente')
@@ -105,14 +97,6 @@ def editar_telefone(request, id:int, telefone :  str):
     dado.save()
     return {'mensagem':'seu telefone foi modificado!'}
 
-#atualizar cpf
-@api.patch('cliente/atualizar/cpf/{id}')
-def editar_cpf(request, id:int, cpf :  str):
-    dado = get_object_or_404(Cliente, id=id)
-    if dado:
-        dado.cpf = cpf
-    dado.save()
-    return {'mensagem':'seu cpf foi modificado!'}
 
 #atualizar email
 @api.patch('cliente/atualizar/e-mail/{id}')
@@ -149,3 +133,71 @@ def deletar(request, id:int):
     cliente.delete()
     return {'mensagem':'o cliente foi deletado'}
 
+
+
+#PROFISSIONAL
+
+#criar Profissional
+@api.post('profissional')
+def criar_profissional(request,profissional: ProfissionalSchema, foto: UploadedFile = File(None), banner: UploadedFile = File(None)):
+    foto_data = foto.read()
+    banner_data = banner.read()
+    NovoProfissional = Profissional.objects.create(
+        nome = profissional.nome,
+        telefone = profissional.telefone,
+        email = profissional.email,
+        senha = profissional.senha,
+        cpf = profissional.cpf,
+        endereco = profissional.endereco,
+        foto =  ContentFile(foto_data, name = foto.name),
+        banner = ContentFile(banner_data, name = banner.name)
+    )
+    NovoProfissional.save()
+    return {"mensagem": "profissional cadastrado"}
+
+#Buscar todos os Profissionais
+@api.get('profissional/', response=List[ProfissionalSchema])
+def buscar_Profissionais(request):
+    return Profissional.objects.all()
+
+#Bucar Profissional por id
+@api.get('profissional/{id}', response= ProfissionalSchema)
+def buscar_prof_Id(request, id: int):
+    prof = Profissional.objects.get(id=id)
+    return prof
+
+#Buscar Profissional por nome
+@api.get('profissional/nome/{nome}')
+def buscar_prof_nome(request, nome: str):
+    try: #caso haja apenas um profissional com um nome
+        prof = Profissional.objects.get(nome=nome)
+        return prof
+    except MultipleObjectsReturned:#caso haja mais de um profissional com o mesmo nome
+        return {"existe mais de um profissional com este nome"}
+
+#Editar todos os dados
+@api.post('profissional/editar/{id}')
+def editar_dados(request,id:int, nome:str, telefone:str, email: str, senha: str, cpf: str, endereco: str, fot: UploadedFile=File(None), baner: UploadedFile=File(None)):
+    foto_data = fot.read()
+    banner_data = baner.read()
+    novoProf = get_object_or_404(Profissional, id=id)
+    if novoProf:
+        novoProf.nome = nome
+    if novoProf:
+        novoProf.telefone = telefone
+    if novoProf:
+        novoProf.email = email
+    if novoProf:
+        novoProf.senha = senha
+    if novoProf:
+        novoProf.cpf = cpf
+    if novoProf:
+        novoProf.endereco = endereco
+    if novoProf:
+        novoProf.foto = ContentFile(foto_data, name= fot.name)
+    if novoProf:
+        novoProf.banner = ContentFile(banner_data, name= baner.name)
+    novoProf.save()
+    return {"mensagem":"seus dados foram atualizados"}
+
+#editar nome
